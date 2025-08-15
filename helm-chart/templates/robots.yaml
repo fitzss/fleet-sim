@@ -1,0 +1,33 @@
+{{- range $i := until (int .Values.robots.count) }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: robot-{{ $i }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: robot-{{ $i }}
+  template:
+    metadata:
+      labels:
+        app: robot-{{ $i }}
+    spec:
+      containers:
+      - name: robot
+        image: {{ $.Values.robots.image }}
+        imagePullPolicy: {{ $.Values.robots.imagePullPolicy }}
+        env:
+        - name: ROBOT_ID
+          value: "{{ $i }}"
+        - name: MONITOR_URL
+          value: "http://fleet-monitor:8000"
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+{{- end }}

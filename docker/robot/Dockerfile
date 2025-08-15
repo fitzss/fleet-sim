@@ -1,0 +1,5 @@
+FROM python:3.11-slim
+WORKDIR /app
+COPY robot.py /app/
+RUN pip install --no-cache-dir requests
+CMD ["python", "/app/robot.py"]

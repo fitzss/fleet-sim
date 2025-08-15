@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fleet-monitor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fleet-monitor
+  template:
+    metadata:
+      labels:
+        app: fleet-monitor
+    spec:
+      containers:
+      - name: monitor
+        image: {{ .Values.monitor.image }}
+        imagePullPolicy: {{ .Values.monitor.imagePullPolicy }}
+        ports:
+        - containerPort: 8000
+          name: http
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleet-monitor
+spec:
+  selector:
+    app: fleet-monitor
+  ports:
+  - name: http
+    port: 8000
+    targetPort: http

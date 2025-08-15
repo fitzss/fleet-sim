@@ -1,0 +1,8 @@
+robots:
+  count: 3
+  image: fleet-robot:v1
+  imagePullPolicy: Never
+
+monitor:
+  image: fleet-monitor:v1
+  imagePullPolicy: Never
