@@ -1,8 +1,8 @@
 robots:
   count: 3
-  image: docker.io/fitzss/fleet-robot:v1
+  image: docker.io/fitzdoud/fleet-robot:v1
   imagePullPolicy: IfNotPresent
 
 monitor:
-  image: docker.io/fitzss/fleet-monitor:v1
+  image: docker.io/fitzdoud/fleet-monitor:v1
   imagePullPolicy: IfNotPresent
