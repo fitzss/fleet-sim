@@ -4,6 +4,6 @@ robots:
   imagePullPolicy: IfNotPresent
 
 monitor:
-  image: docker.io/fitzdoud/fleet-monitor:v1
+  image: docker.io/fitzdoud/fleet-monitor:v2
   imagePullPolicy: IfNotPresent
-  useRollout: false  # Toggle for blue/green deployments
+  useRollout: true  # Toggle for blue/green deployments
