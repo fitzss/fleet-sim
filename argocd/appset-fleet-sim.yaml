@@ -1,0 +1,52 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: fleet-sim-sites
+  namespace: argocd
+spec:
+  generators:
+  - list:
+      elements:
+      - name: site-a
+        namespace: robot-fleet-a
+        valuesFile: values-site-a.yaml
+      - name: site-b
+        namespace: robot-fleet-b
+        valuesFile: values-site-b.yaml
+      - name: site-c
+        namespace: robot-fleet-c
+        valuesFile: values-site-c.yaml
+  template:
+    metadata:
+      name: '{{name}}'
+      labels:
+        site: '{{name}}'
+        platform: fleet-sim
+    spec:
+      project: fleets
+      source:
+        repoURL: https://github.com/fitzss/fleet-sim
+        targetRevision: main
+        path: helm-chart
+        helm:
+          valueFiles:
+          - values-gitops.yaml
+          - '{{valuesFile}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{namespace}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        retry:
+          limit: 5
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m
+        syncOptions:
+        - CreateNamespace=true
+      - name: site-d
+        namespace: robot-fleet-d
+        valuesFile: values-site-d.yaml

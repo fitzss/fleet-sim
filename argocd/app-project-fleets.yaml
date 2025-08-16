@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: fleets
+  namespace: argocd
+spec:
+  description: Multi-site fleet management platform
+  sourceRepos:
+  - https://github.com/fitzss/fleet-sim
+  destinations:
+  - namespace: robot-fleet-*
+    server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  roles:
+  - name: site-a-admin
+    policies:
+    - p, proj:fleets:site-a-admin, applications, *, fleets/site-a, allow
+    - p, proj:fleets:site-a-admin, repositories, *, *, allow
+  - name: site-b-admin
+    policies:
+    - p, proj:fleets:site-b-admin, applications, *, fleets/site-b, allow
+    - p, proj:fleets:site-b-admin, repositories, *, *, allow

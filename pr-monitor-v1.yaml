@@ -1,0 +1,25 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: pr-monitor-v1
+  namespace: tekton-pipelines
+spec:
+  params:
+  - name: repo_url
+    value: https://github.com/fitzss/fleet-sim
+  - name: revision
+    value: main
+  - name: service_dir
+    value: docker/monitor
+  - name: image_dest
+    value: docker.io/fitzss/fleet-monitor
+  - name: image_tag
+    value: v1
+  pipelineRef:
+    name: service-build-push
+  workspaces:
+  - name: source
+    volumeClaimTemplate:
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources: { requests: { storage: 1Gi } }
