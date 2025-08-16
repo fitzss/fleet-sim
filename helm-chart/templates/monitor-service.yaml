@@ -1,0 +1,12 @@
+# This Service ALWAYS exists regardless of rollout mode
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleet-monitor
+spec:
+  selector:
+    app: fleet-monitor
+  ports:
+  - name: http
+    port: 8000
+    targetPort: http

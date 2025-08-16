@@ -1,0 +1,65 @@
+{{- if .Values.monitor.useRollout }}
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: fleet-monitor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fleet-monitor
+  strategy:
+    blueGreen:
+      activeService: fleet-monitor  # Uses the main service
+      previewService: fleet-monitor-preview
+      autoPromotionEnabled: true
+      autoPromotionSeconds: 30
+      scaleDownDelaySeconds: 30
+      prePromotionAnalysis:
+        templates:
+        - templateName: success-rate
+        args:
+        - name: service-name
+          value: fleet-monitor
+  template:
+    metadata:
+      labels:
+        app: fleet-monitor
+    spec:
+      containers:
+      - name: monitor
+        image: {{ .Values.monitor.image }}
+        imagePullPolicy: {{ .Values.monitor.imagePullPolicy }}
+        ports:
+        - containerPort: 8000
+          name: http
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 5"]
+---
+# Preview service for blue/green
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleet-monitor-preview
+spec:
+  selector:
+    app: fleet-monitor
+  ports:
+  - name: http
+    port: 8000
+    targetPort: http
+{{- end }}
